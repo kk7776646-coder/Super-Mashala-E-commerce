@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 72" width="380" height="72">
+  <!-- SUPER MASHALA & DRY FRUITS — INVOICE PRINT OPTIMIZED LOGO -->
+  <!-- Left: Crisp Ink Emblem -->
+  <g transform="translate(6, 8)">
+    <rect x="0" y="0" width="56" height="56" rx="14" fill="#641C19" />
+    <rect x="2.5" y="2.5" width="51" height="51" rx="11.5" fill="none" stroke="#FFFFFF" stroke-width="1.5" />
+
+    <path d="M14 36 C14 45, 42 45, 42 36 L14 36 Z" fill="#FAF5EB" />
+    <path d="M12 36 C12 34.5, 44 34.5, 44 36 C44 37.5, 12 37.5, 12 36 Z" fill="#FFFFFF" />
+
+    <path d="M28 14 C28 14, 20 22, 20 28 C20 32.5, 23.5 34.5, 28 34.5 C32.5 34.5, 36 32.5, 36 28 C36 22, 28 14, 28 14 Z" fill="#FFFFFF" />
+    <circle cx="28" cy="26" r="3" fill="#641C19" />
+
+    <path d="M34 16 C39 15, 43 19, 42 24 C37 25, 33 21, 34 16 Z" fill="#FAF5EB" />
+  </g>
+
+  <!-- Right: Sharp High-Contrast Invoice Typography -->
+  <g transform="translate(76, 0)">
+    <text x="0" y="36" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="23" font-weight="900" fill="#1A1A1A" letter-spacing="1.2">SUPER MASHALA</text>
+    <text x="1" y="54" font-family="'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="800" fill="#641C19" letter-spacing="3.2">&amp; DRY FRUITS</text>
+  </g>
+</svg>

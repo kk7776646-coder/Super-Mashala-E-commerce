@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 72" width="380" height="72">
+  <!-- SUPER MASHALA & DRY FRUITS — OFFICIAL PRIMARY BRAND LOGO -->
+  <defs>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#C49A48" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left: Authentic Spice & Botanical Emblem -->
+  <g transform="translate(6, 8)">
+    <!-- Base Rounded Badge -->
+    <rect x="0" y="0" width="56" height="56" rx="14" fill="#641C19" />
+    <rect x="2.5" y="2.5" width="51" height="51" rx="11.5" fill="none" stroke="#C49A48" stroke-width="1.5" stroke-opacity="0.9" />
+
+    <!-- Traditional Stone Mortar (Bowl Base) -->
+    <path d="M14 36 C14 45, 42 45, 42 36 L14 36 Z" fill="#C49A48" />
+    <!-- Mortar Rim -->
+    <path d="M12 36 C12 34.5, 44 34.5, 44 36 C44 37.5, 12 37.5, 12 36 Z" fill="#FAF5EB" />
+
+    <!-- Central Aroma & Spice Seed Essence -->
+    <path d="M28 14 C28 14, 20 22, 20 28 C20 32.5, 23.5 34.5, 28 34.5 C32.5 34.5, 36 32.5, 36 28 C36 22, 28 14, 28 14 Z" fill="#FAF5EB" />
+    <circle cx="28" cy="26" r="3" fill="#C49A48" />
+
+    <!-- Botanical Fresh Green Leaf Accent (#526B43) -->
+    <path d="M34 16 C39 15, 43 19, 42 24 C37 25, 33 21, 34 16 Z" fill="#526B43" />
+    <path d="M35 18 Q38 21 41 23" stroke="#FAF5EB" stroke-width="0.8" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- Right: Authoritative Brand Typography -->
+  <g transform="translate(76, 0)">
+    <!-- SUPER MASHALA (Deep Maroon #641C19) -->
+    <text x="0" y="36" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="23" font-weight="800" fill="#641C19" letter-spacing="1.2">SUPER MASHALA</text>
+    
+    <!-- & DRY FRUITS (Warm Gold #C49A48) -->
+    <g transform="translate(1, 54)">
+      <text x="0" y="0" font-family="'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#C49A48" letter-spacing="3.2">&amp; DRY FRUITS</text>
+      <!-- Subtle Quality Assurance Line -->
+      <line x1="140" y1="-3.5" x2="220" y2="-3.5" stroke="#C49A48" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="2,2" />
+    </g>
+  </g>
+</svg>

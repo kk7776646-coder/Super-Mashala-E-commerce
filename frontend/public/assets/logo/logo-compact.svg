@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- SUPER MASHALA COMPACT BRAND EMBLEM / FAVICON -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#641C19" />
+  <rect x="5" y="5" width="54" height="54" rx="13" fill="none" stroke="#C49A48" stroke-width="2" />
+
+  <!-- Traditional Stone Mortar -->
+  <path d="M16 41 C16 51, 48 51, 48 41 L16 41 Z" fill="#C49A48" />
+  <path d="M14 41 C14 39, 50 39, 50 41 C50 43, 14 43, 14 41 Z" fill="#FAF5EB" />
+
+  <!-- Aroma Flame & Seed -->
+  <path d="M32 16 C32 16, 23 25, 23 32 C23 37, 27 39.5, 32 39.5 C37 39.5, 41 37, 41 32 C41 25, 32 16, 32 16 Z" fill="#FAF5EB" />
+  <circle cx="32" cy="30" r="3.5" fill="#C49A48" />
+
+  <!-- Botanical Green Leaf -->
+  <path d="M39 18 C45 17, 49 22, 48 27 C42 28, 38 24, 39 18 Z" fill="#526B43" />
+</svg>
