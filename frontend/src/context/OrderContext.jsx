@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { INITIAL_PRODUCTS } from '../data/productsData';
+import { API_BASE } from '../config/api';
 
 const OrderContext = createContext(null);
 
@@ -32,7 +33,7 @@ export const OrderProvider = ({ children }) => {
   // Fetch real products from SQLite backend
   const fetchProductsFromBackend = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/products');
+      const res = await fetch(`${API_BASE}/api/products`);
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -48,7 +49,7 @@ export const OrderProvider = ({ children }) => {
   // Fetch real orders from SQLite backend
   const fetchOrdersFromBackend = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/orders');
+      const res = await fetch(`${API_BASE}/api/orders`);
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -119,7 +120,7 @@ export const OrderProvider = ({ children }) => {
 
     // Atomic sync to backend DB
     try {
-      const res = await fetch('http://localhost:8000/api/orders', {
+      const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newOrder)
@@ -167,7 +168,7 @@ export const OrderProvider = ({ children }) => {
     }));
 
     try {
-      await fetch('http://localhost:8000/api/invoices/record-print', {
+      await fetch(`${API_BASE}/api/invoices/record-print`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })
@@ -191,7 +192,7 @@ export const OrderProvider = ({ children }) => {
     }));
 
     try {
-      await fetch(`http://localhost:8000/api/orders/${orderId}`, {
+      await fetch(`${API_BASE}/api/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -215,7 +216,7 @@ export const OrderProvider = ({ children }) => {
     }));
 
     try {
-      await fetch(`http://localhost:8000/api/orders/${orderId}`, {
+      await fetch(`${API_BASE}/api/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_status: newPaymentStatus })
@@ -228,7 +229,7 @@ export const OrderProvider = ({ children }) => {
   // Real-time Payment Verification via 12-digit UTR
   const verifyPayment = async (orderId, transactionId) => {
     try {
-      const res = await fetch('http://localhost:8000/api/payments/verify', {
+      const res = await fetch(`${API_BASE}/api/payments/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId, transactionId })
@@ -264,7 +265,7 @@ export const OrderProvider = ({ children }) => {
   // Check real-time payment status
   const checkPaymentStatus = async (orderId) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/payments/status/${orderId}`);
+      const res = await fetch(`${API_BASE}/api/payments/status/${orderId}`);
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.paymentStatus === 'PAID') {
@@ -292,7 +293,7 @@ export const OrderProvider = ({ children }) => {
   // Admin adds a product
   const addProduct = async (newProdData) => {
     try {
-      const res = await fetch('http://localhost:8000/api/products', {
+      const res = await fetch(`${API_BASE}/api/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProdData)
@@ -312,7 +313,7 @@ export const OrderProvider = ({ children }) => {
   // Admin updates product
   const updateProduct = async (updatedData) => {
     try {
-      const res = await fetch('http://localhost:8000/api/products', {
+      const res = await fetch(`${API_BASE}/api/products`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE } from '../config/api';
 
 const AuthContext = createContext(null);
 
@@ -104,7 +105,7 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async (credential, userInfo) => {
     setAuthError(null);
     try {
-      const response = await fetch('http://localhost:8000/api/auth/google', {
+      const response = await fetch(`${API_BASE}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -163,7 +164,7 @@ export const AuthProvider = ({ children }) => {
     const cleanPass = (password || '').trim();
 
     try {
-      const response = await fetch('http://localhost:8000/api/admin/auth/google', {
+      const response = await fetch(`${API_BASE}/api/admin/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -218,7 +219,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/admin/auth/reset-password', {
+      const response = await fetch(`${API_BASE}/api/admin/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

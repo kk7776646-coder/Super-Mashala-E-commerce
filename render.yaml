@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: super-mashala-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: PROJECT_NAME
+        value: "SUPER MASHALA & DRY FRUITS"
+      - key: DATABASE_MODE
+        value: "auto"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_INITIAL_PASSWORD
+        sync: false
+      - key: ADMIN_RESET_OTP
+        sync: false
+      - key: OWNER_PHONE
+        value: "9527898176"
+      - key: UPI_ID
+        value: "9527898176@upi"
+      - key: CORS_ORIGINS
+        value: "*"
