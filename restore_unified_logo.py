@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 
-src_path = r"C:\Users\KALAMUDDIN\.gemini\antigravity\brain\d6464d9f-d5db-4d11-9704-0b478e7122da\.user_uploaded\media_1795661693431_62b6816b.jpg"
+src_path = r"C:\Users\mdanwar\.gemini\antigravity\brain\d6464d9f-d5db-4d11-9704-0b478e7122da\.user_uploaded\media_1795661693431_62b6816b.jpg"
 img = Image.open(src_path).convert("RGBA")
 
 # Make black background transparent
@@ -26,7 +26,7 @@ bbox = img.getbbox()
 if bbox:
     img = img.crop(bbox)
 
-out_dir = r"C:\Users\KALAMUDDIN\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\logo"
+out_dir = r"C:\Users\mdanwar\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\logo"
 os.makedirs(out_dir, exist_ok=True)
 
 # Save as the official logo and horizontal/compact aliases so everything uses the unified logo

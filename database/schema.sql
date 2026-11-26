@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS admin_allowlist (
 
 -- Pre-authorized business owner admin emails
 INSERT INTO admin_allowlist (email, name) VALUES 
-('admin@supermashala.com', 'Super Mashala Management'),
-('kalamuddin.mashala@gmail.com', 'Kalamuddin')
+('mdanwar.mashala@gmail.com', 'Md Anwar (Business Owner)'),
+('supermashala.official@gmail.com', 'Super Mashala Official')
 ON CONFLICT (email) DO NOTHING;
 
 -- 4. Profiles Table (Extends Supabase Auth users)

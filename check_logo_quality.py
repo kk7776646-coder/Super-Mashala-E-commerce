@@ -1,6 +1,6 @@
 from PIL import Image
 
-h_img = Image.open(r"C:\Users\KALAMUDDIN\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\logo\super-mashala-horizontal.png")
+h_img = Image.open(r"C:\Users\mdanwar\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\logo\super-mashala-horizontal.png")
 print("Horizontal dimensions:", h_img.size, "Mode:", h_img.mode)
 
 # Check alpha channel distribution

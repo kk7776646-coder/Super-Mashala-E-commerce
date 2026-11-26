@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 
-src_path = r"C:\Users\KALAMUDDIN\.gemini\antigravity\brain\d6464d9f-d5db-4d11-9704-0b478e7122da\.user_uploaded\media_1795661693431_62b6816b.jpg"
+src_path = r"C:\Users\mdanwar\.gemini\antigravity\brain\d6464d9f-d5db-4d11-9704-0b478e7122da\.user_uploaded\media_1795661693431_62b6816b.jpg"
 img = Image.open(src_path).convert("RGBA")
 
 # 1. Clean black background from full image
@@ -37,7 +37,7 @@ if bbbox:
     banner = banner.crop(bbbox)
 
 # Save both
-out_dir = r"C:\Users\KALAMUDDIN\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\logo"
+out_dir = r"C:\Users\mdanwar\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\logo"
 emblem.save(os.path.join(out_dir, "super-mashala-symbol.png"), "PNG")
 banner.save(os.path.join(out_dir, "super-mashala-text-banner.png"), "PNG")
 
@@ -62,5 +62,5 @@ y_offset = (total_h - b_h) // 2
 horizontal_logo.paste(banner_resized, (e_w + gap, y_offset), banner_resized)
 
 horizontal_logo.save(os.path.join(out_dir, "super-mashala-horizontal.png"), "PNG")
-horizontal_logo.save(r"C:\Users\KALAMUDDIN\.gemini\antigravity\brain\d6464d9f-d5db-4d11-9704-0b478e7122da\inspect_horizontal_logo.png")
+horizontal_logo.save(r"C:\Users\mdanwar\.gemini\antigravity\brain\d6464d9f-d5db-4d11-9704-0b478e7122da\inspect_horizontal_logo.png")
 print("Horizontal logo created:", horizontal_logo.size)

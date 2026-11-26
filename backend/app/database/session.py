@@ -321,7 +321,7 @@ def init_db():
                 c.execute("ALTER TABLE admin_allowlist ADD COLUMN password TEXT DEFAULT ''")
 
             # Seed admin allowlist
-            c.execute("DELETE FROM admin_allowlist WHERE LOWER(email) IN ('admin@supermashala.com', 'kalamuddin.mashala@gmail.com')")
+            c.execute("DELETE FROM admin_allowlist WHERE LOWER(email) IN ('admin@supermashala.com')")
             c.execute("INSERT OR REPLACE INTO admin_allowlist (email, phone, name, password) VALUES (?, ?, ?, ?)",
                       ("mdanwar.mashala@gmail.com", "9527898176", "Md Anwar (Business Owner)", settings.ADMIN_INITIAL_PASSWORD))
             c.execute("INSERT OR IGNORE INTO admin_allowlist (email, phone, name, password) VALUES (?, ?, ?, ?)",
@@ -489,7 +489,7 @@ def init_db():
                 ''', p)
 
             # Seed admin allowlist
-            c.execute("DELETE FROM admin_allowlist WHERE LOWER(email) IN ('admin@supermashala.com', 'kalamuddin.mashala@gmail.com')")
+            c.execute("DELETE FROM admin_allowlist WHERE LOWER(email) IN ('admin@supermashala.com')")
             c.execute('''
             INSERT INTO admin_allowlist (email, phone, name, password)
             VALUES (%s, %s, %s, %s)

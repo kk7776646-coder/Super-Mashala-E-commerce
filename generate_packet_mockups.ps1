@@ -1,6 +1,6 @@
 ﻿Add-Type -AssemblyName System.Drawing
 
-$baseDir = "C:\Users\KALAMUDDIN\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\products"
+$baseDir = "C:\Users\mdanwar\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\products"
 
 $products = @(
     @{

@@ -1,50 +1,14 @@
 import React, { useState } from 'react';
-import { X, UserPlus, Check, ArrowLeft, Shield } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export const GoogleAccountChooserModal = ({ isOpen, onClose, onSelectAccount }) => {
-  const [showAddAccount, setShowAddAccount] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customEmail, setCustomEmail] = useState('');
   const [customError, setCustomError] = useState('');
 
   if (!isOpen) return null;
 
-  const defaultAccounts = [
-    {
-      id: 'acc_1',
-      name: 'Md Anwar Shaikh',
-      email: 'mdanwar.mashala@gmail.com',
-      badge: 'Shopkeeper / Business Owner',
-      avatarBg: 'bg-blue-600',
-      initial: 'M'
-    },
-    {
-      id: 'acc_2',
-      name: 'Super Mashala Wholesale',
-      email: 'supermashala.owner@gmail.com',
-      badge: 'Verified Wholesale Account',
-      avatarBg: 'bg-emerald-600',
-      initial: 'S'
-    },
-    {
-      id: 'acc_3',
-      name: 'Retail Grocery Partner',
-      email: 'retail.partner@gmail.com',
-      badge: 'Customer Store Member',
-      avatarBg: 'bg-amber-600',
-      initial: 'R'
-    }
-  ];
-
-  const handleAccountClick = (acc) => {
-    onSelectAccount({
-      name: acc.name,
-      email: acc.email,
-      sub: `g_${acc.id}_${Date.now()}`
-    });
-  };
-
-  const handleAddCustomAccount = (e) => {
+  const handleSignIn = (e) => {
     e.preventDefault();
     setCustomError('');
 
@@ -61,7 +25,7 @@ export const GoogleAccountChooserModal = ({ isOpen, onClose, onSelectAccount }) 
     onSelectAccount({
       name: finalName,
       email: cleanEmail,
-      sub: `g_custom_${Date.now()}`
+      sub: `g_account_${Date.now()}`
     });
   };
 
@@ -73,7 +37,7 @@ export const GoogleAccountChooserModal = ({ isOpen, onClose, onSelectAccount }) 
         className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity animate-fadeIn z-[100]" 
       />
 
-      {/* Google Account Picker Card */}
+      {/* Google Account Card */}
       <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[101] animate-scaleUp text-gray-800">
         
         {/* Close Button */}
@@ -99,121 +63,62 @@ export const GoogleAccountChooserModal = ({ isOpen, onClose, onSelectAccount }) 
           {/* Heading */}
           <div className="text-center mb-5">
             <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
-              Choose an account
+              Sign in with Google
             </h3>
             <p className="text-xs text-gray-600 mt-1">
               to continue to <span className="font-semibold text-gray-900">SUPER MASHALA &amp; DRY FRUITS</span>
             </p>
           </div>
 
-          {!showAddAccount ? (
-            /* Accounts List */
-            <div className="space-y-1">
-              {defaultAccounts.map((acc) => (
-                <button
-                  key={acc.id}
-                  onClick={() => handleAccountClick(acc)}
-                  className="w-full flex items-center gap-3.5 p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 text-left transition-all group cursor-pointer"
-                >
-                  <div className={`w-9 h-9 rounded-full ${acc.avatarBg} text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
-                    {acc.initial}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs font-semibold text-gray-900">
-                        {acc.name}
-                      </p>
-                      <span className="text-[10px] text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
-                        {acc.badge}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5">
-                      {acc.email}
-                    </p>
-                  </div>
-                </button>
-              ))}
-
-              {/* Add / Use another account option */}
-              <div className="pt-2 border-t border-gray-100 mt-2">
-                <button
-                  onClick={() => setShowAddAccount(true)}
-                  className="w-full flex items-center gap-3.5 p-3 rounded-xl hover:bg-gray-50 text-left transition-all text-blue-600 hover:text-blue-700 font-medium text-xs group cursor-pointer"
-                >
-                  <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
-                    <UserPlus className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-xs text-gray-900 group-hover:text-blue-600 transition-colors">
-                      Use another account
-                    </span>
-                    <p className="text-[11px] text-gray-500">
-                      Sign in with a different Google account
-                    </p>
-                  </div>
-                </button>
-              </div>
+          <form onSubmit={handleSignIn} className="space-y-3.5">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Google Email Address *
+              </label>
+              <input
+                type="email"
+                value={customEmail}
+                onChange={(e) => setCustomEmail(e.target.value)}
+                placeholder="yourname@gmail.com"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                required
+                autoFocus
+              />
             </div>
-          ) : (
-            /* Add Another Account Form */
-            <form onSubmit={handleAddCustomAccount} className="space-y-3.5 animate-fadeIn">
+
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Your Full Name (Optional)
+              </label>
+              <input
+                type="text"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="e.g. Retail Partner"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            {customError && (
+              <p className="text-[11px] text-red-600">{customError}</p>
+            )}
+
+            <div className="pt-2 flex gap-2">
               <button
                 type="button"
-                onClick={() => setShowAddAccount(false)}
-                className="text-xs text-blue-600 hover:underline flex items-center gap-1 mb-1 font-medium"
+                onClick={onClose}
+                className="flex-1 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to account list</span>
+                Cancel
               </button>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Your Full Name
-                </label>
-                <input
-                  type="text"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="e.g. Ramesh Patel"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Google Email Address *
-                </label>
-                <input
-                  type="email"
-                  value={customEmail}
-                  onChange={(e) => setCustomEmail(e.target.value)}
-                  placeholder="yourname@gmail.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </div>
-
-              {customError && (
-                <p className="text-[11px] text-red-600">{customError}</p>
-              )}
-
-              <div className="pt-2 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddAccount(false)}
-                  className="flex-1 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
-                >
-                  Continue
-                </button>
-              </div>
-            </form>
-          )}
+              <button
+                type="submit"
+                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
+              >
+                Continue
+              </button>
+            </div>
+          </form>
 
           {/* Privacy & Terms Note */}
           <div className="mt-5 pt-4 border-t border-gray-100 text-[10px] text-gray-500 leading-relaxed text-center">
