@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { INITIAL_PRODUCTS } from '../data/productsData';
 import { API_BASE } from '../config/api';
+import { supabase } from '../config/supabase';
 
 const OrderContext = createContext(null);
 
@@ -49,7 +50,10 @@ export const OrderProvider = ({ children }) => {
   // Fetch real orders from SQLite backend
   const fetchOrdersFromBackend = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/orders`);
+      const sessionRes = await supabase.auth.getSession();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const res = await fetch(`${API_BASE}/api/orders`, { headers });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -120,16 +124,27 @@ export const OrderProvider = ({ children }) => {
 
     // Atomic sync to backend DB
     try {
+      const sessionRes = await supabase.auth.getSession();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
       const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(newOrder)
       });
       if (res.ok) {
         // Refresh products to get updated stock
         fetchProductsFromBackend();
+      } else if (res.status === 401) {
+        throw new Error('Authentication required. Please log in before completing your order.');
       }
     } catch (err) {
+      if (err.message && err.message.includes('Authentication')) {
+        throw err;
+      }
       // Local fallback
     }
 

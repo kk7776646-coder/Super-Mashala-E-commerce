@@ -8,7 +8,12 @@ import base64
 
 from ..database.session import get_db, db_wrapper
 from ..core.config import settings
-from ..core.security import get_password_hash, verify_password
+from ..core.security import (
+    get_password_hash,
+    verify_password,
+    get_current_user,
+    get_optional_current_user
+)
 from ..schemas.all_schemas import (
     UserRegister,
     UserLogin,
@@ -412,7 +417,7 @@ def update_product(payload: ProductUpdate, prod_id: Optional[str] = None):
 # 4. WHOLESALE ORDERS ENDPOINTS
 # ----------------------------------------------------
 @router.post("/orders")
-def place_order(payload: OrderCreatePayload):
+def place_order(payload: OrderCreatePayload, current_user: Dict[str, Any] = Depends(get_current_user)):
     if not payload.items:
         raise HTTPException(status_code=400, detail="Cannot place order with empty cart.")
 
@@ -446,11 +451,13 @@ def place_order(payload: OrderCreatePayload):
         pay_method = payload.paymentMethod or payload.payment_method or "Cash on Delivery"
         pay_status = "PENDING"
 
-        cust_id = payload.customerId or payload.customer_id or "guest"
-        cust_name = payload.customerName or payload.customer_name or "Retail Partner"
-        s_name = payload.shopName or payload.shop_name or "Retail Store"
-        phone = payload.contactNumber or payload.contact_number or ""
-        addr = payload.deliveryAddress or payload.delivery_address or ""
+        # Strictly derive customer identity from verified token (never trust unverified client input)
+        cust_id = current_user.get("id") or current_user.get("sub") or "authenticated_user"
+        user_meta = current_user.get("user_metadata") or {}
+        cust_name = payload.customerName or payload.customer_name or user_meta.get("full_name") or user_meta.get("name") or current_user.get("full_name") or "Retail Partner"
+        s_name = payload.shopName or payload.shop_name or user_meta.get("shop_name") or current_user.get("shop_name") or "Retail Store"
+        phone = payload.contactNumber or payload.contact_number or current_user.get("phone") or user_meta.get("phone") or ""
+        addr = payload.deliveryAddress or payload.delivery_address or user_meta.get("delivery_address") or current_user.get("delivery_address") or ""
 
         cursor.execute(f'''
         INSERT INTO orders (
@@ -532,13 +539,20 @@ def place_order(payload: OrderCreatePayload):
     }
 
 @router.get("/orders")
-def get_orders(customer_id: Optional[str] = None):
+def get_orders(
+    customer_id: Optional[str] = None,
+    current_user: Optional[Dict[str, Any]] = Depends(get_optional_current_user)
+):
     with get_db() as conn:
         cursor = conn.cursor()
         placeholder = "%s" if db_wrapper.is_postgres else "?"
 
-        if customer_id:
-            cursor.execute(f"SELECT * FROM orders WHERE customer_id = {placeholder} ORDER BY created_at DESC", (customer_id,))
+        effective_cust_id = customer_id
+        if not effective_cust_id and current_user and current_user.get("role") != "admin":
+            effective_cust_id = current_user.get("id") or current_user.get("sub")
+
+        if effective_cust_id:
+            cursor.execute(f"SELECT * FROM orders WHERE customer_id = {placeholder} ORDER BY created_at DESC", (effective_cust_id,))
         else:
             cursor.execute("SELECT * FROM orders ORDER BY created_at DESC")
         
@@ -582,6 +596,54 @@ def get_orders(customer_id: Optional[str] = None):
             orders.append(od)
 
     return orders
+
+@router.get("/orders/{order_id}")
+def get_order_by_id(
+    order_id: str,
+    current_user: Optional[Dict[str, Any]] = Depends(get_optional_current_user)
+):
+    with get_db() as conn:
+        cursor = conn.cursor()
+        placeholder = "%s" if db_wrapper.is_postgres else "?"
+        cursor.execute(f"SELECT * FROM orders WHERE id = {placeholder} OR order_number = {placeholder}", (order_id, order_id))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Order not found")
+        od = row_to_dict(cursor, row)
+        od["orderNumber"] = od.get("order_number") or od["id"]
+        od["customerName"] = od.get("customer_name")
+        od["shopName"] = od.get("shop_name")
+        od["contactNumber"] = od.get("contact_number")
+        od["deliveryAddress"] = od.get("delivery_address")
+        od["subtotal"] = float(od.get("subtotal") or od.get("subtotal_amount") or 0.0)
+        od["deliveryFee"] = float(od.get("delivery_fee") or 0.0)
+        od["totalAmount"] = float(od.get("total_amount") or 0.0)
+        od["paymentMethod"] = od.get("payment_method")
+        od["paymentStatus"] = od.get("payment_status")
+        od["status"] = od.get("order_status") or od.get("status")
+        od["transactionId"] = od.get("transaction_id")
+        od["paymentVerifiedAt"] = od.get("payment_verified_at")
+
+        cursor.execute(f"SELECT * FROM order_items WHERE order_id = {placeholder}", (od["id"],))
+        item_rows = [row_to_dict(cursor, i) for i in cursor.fetchall()]
+        od["items"] = []
+        for itmd in item_rows:
+            od["items"].append({
+                "id": itmd["id"],
+                "productId": itmd["product_id"],
+                "name": itmd.get("product_name_snapshot") or itmd.get("product_name"),
+                "price": float(itmd.get("packet_price_snapshot") or itmd.get("unit_price") or 0.0),
+                "quantity": int(itmd.get("packet_quantity") or itmd.get("quantity") or 1),
+                "piecesPerPacket": itmd.get("pieces_per_packet_snapshot"),
+                "packetWeight": itmd.get("packet_weight_snapshot") or itmd.get("packet_weight"),
+                "itemTotal": float(itmd.get("line_total") or itmd.get("item_total") or 0.0),
+                "image": itmd.get("image_url")
+            })
+
+        cursor.execute(f"SELECT print_count FROM invoices WHERE order_id = {placeholder}", (od["id"],))
+        inv = cursor.fetchone()
+        od["invoicePrintCount"] = inv[0] if inv else 1
+        return od
 
 @router.patch("/orders/{order_id}")
 @router.put("/orders/{order_id}")

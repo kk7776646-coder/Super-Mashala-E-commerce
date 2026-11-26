@@ -22,7 +22,7 @@ import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ChevronUp } from 'lucide-react';
 
 function SuperMashalaApp() {
-  const { adminUser } = useAuth();
+  const { user, adminUser } = useAuth();
   const [activeSection, setActiveSection] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +35,27 @@ function SuperMashalaApp() {
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Resume checkout automatically when customer authenticates
+  useEffect(() => {
+    if (user) {
+      const pendingCheckout = sessionStorage.getItem('pending_checkout');
+      if (pendingCheckout === 'true') {
+        sessionStorage.removeItem('pending_checkout');
+        setIsCheckoutOpen(true);
+      }
+    }
+  }, [user]);
+
+  const handleBuyNow = (product, qty = 1) => {
+    setQuickViewProduct(null);
+    if (!user) {
+      sessionStorage.setItem('pending_checkout', 'true');
+      setIsAuthOpen(true);
+    } else {
+      setIsCheckoutOpen(true);
+    }
+  };
 
   const isAnyModalOpen = isAuthOpen || isAdminLoginOpen || isAdminDashboardOpen || isCheckoutOpen || isOrdersOpen || Boolean(quickViewProduct);
 
@@ -200,6 +221,7 @@ function SuperMashalaApp() {
           onSelectCategory={setSelectedCategory}
           searchQuery={searchQuery}
           onQuickView={(p) => setQuickViewProduct(p)}
+          onBuyNow={handleBuyNow}
         />
 
         {/* Why Choose Super Mashala Feature Ribbon */}
@@ -230,18 +252,33 @@ function SuperMashalaApp() {
 
       {/* 5. Modals & Drawers */}
       <CartDrawer
-        onProceedToCheckout={() => setIsCheckoutOpen(true)}
+        onProceedToCheckout={() => {
+          if (!user) {
+            sessionStorage.setItem('pending_checkout', 'true');
+            setIsAuthOpen(true);
+          } else {
+            setIsCheckoutOpen(true);
+          }
+        }}
       />
 
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         onOrderPlacedSuccess={() => setIsOrdersOpen(true)}
+        onOpenAuth={() => setIsAuthOpen(true)}
       />
 
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
+        onAuthSuccess={() => {
+          const pending = sessionStorage.getItem('pending_checkout');
+          if (pending === 'true') {
+            sessionStorage.removeItem('pending_checkout');
+            setIsCheckoutOpen(true);
+          }
+        }}
       />
 
       {/* Separate Secure Admin Login Modal */}
@@ -263,6 +300,7 @@ function SuperMashalaApp() {
       <QuickViewModal
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
+        onBuyNow={handleBuyNow}
       />
 
       {/* Protected Admin Dashboard */}

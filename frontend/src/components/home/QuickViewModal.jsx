@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, ShoppingBag, Check, ShieldCheck, Sparkles, PackageCheck } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
-export const QuickViewModal = ({ product, onClose }) => {
+export const QuickViewModal = ({ product, onClose, onBuyNow }) => {
   if (!product) return null;
 
   const { addToCart } = useCart();
@@ -22,6 +22,15 @@ export const QuickViewModal = ({ product, onClose }) => {
       setIsAdded(false);
       onClose();
     }, 700);
+  };
+
+  const handleBuyNow = () => {
+    if (isOutOfStock) return;
+    addToCart(product, quantity);
+    onClose();
+    if (onBuyNow) {
+      onBuyNow(product, quantity);
+    }
   };
 
   return (
@@ -127,13 +136,13 @@ export const QuickViewModal = ({ product, onClose }) => {
               </div>
             </div>
 
-            {/* Add to Cart Footer */}
-            <div className="pt-2 border-t border-brand-border flex items-center gap-3">
+            {/* Add to Cart & Buy Now Footer */}
+            <div className="pt-2 border-t border-brand-border flex items-center gap-2">
               <div className="flex items-center border border-brand-border rounded-xl bg-brand-surface p-1">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1 || isOutOfStock}
-                  className="px-2.5 py-1 text-xs font-bold disabled:opacity-40"
+                  className="px-2.5 py-1 text-xs font-bold disabled:opacity-40 cursor-pointer"
                 >
                   -
                 </button>
@@ -143,7 +152,7 @@ export const QuickViewModal = ({ product, onClose }) => {
                 <button
                   onClick={() => setQuantity(Math.min(stock, quantity + 1))}
                   disabled={quantity >= stock || isOutOfStock}
-                  className="px-2.5 py-1 text-xs font-bold disabled:opacity-40"
+                  className="px-2.5 py-1 text-xs font-bold disabled:opacity-40 cursor-pointer"
                 >
                   +
                 </button>
@@ -152,19 +161,27 @@ export const QuickViewModal = ({ product, onClose }) => {
               <button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock}
-                className="flex-1 py-3 bg-brand-primary hover:bg-brand-primary-light text-brand-cream text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                className="py-3 px-3.5 bg-white hover:bg-brand-cream text-brand-secondary border border-brand-border text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {isAdded ? (
                   <>
-                    <Check className="w-4 h-4 text-brand-gold" />
-                    <span>Added to Cart!</span>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span>Added!</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-4 h-4 text-brand-gold" />
-                    <span>Add {quantity} Packet{quantity > 1 ? 's' : ''} (₹{(price * quantity).toFixed(2)})</span>
+                    <ShoppingBag className="w-4 h-4 text-brand-gold-dark" />
+                    <span>Add to Cart</span>
                   </>
                 )}
+              </button>
+
+              <button
+                onClick={handleBuyNow}
+                disabled={isOutOfStock}
+                className="flex-1 py-3 bg-brand-primary hover:bg-brand-primary-light text-brand-cream text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                <span>Buy Now (₹{(price * quantity).toFixed(2)})</span>
               </button>
             </div>
 

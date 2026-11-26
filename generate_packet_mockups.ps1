@@ -1,4 +1,4 @@
-﻿Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Drawing
 
 $baseDir = "C:\Users\mdanwar\.gemini\antigravity\scratch\super-mashala\frontend\public\assets\products"
 

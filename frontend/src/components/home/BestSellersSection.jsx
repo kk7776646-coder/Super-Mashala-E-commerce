@@ -7,7 +7,8 @@ export const BestSellersSection = ({
   selectedCategory, 
   onSelectCategory,
   searchQuery,
-  onQuickView 
+  onQuickView,
+  onBuyNow
 }) => {
   const { products } = useOrders();
   const [activeTab, setActiveTab] = useState('all');
@@ -173,6 +174,7 @@ export const BestSellersSection = ({
                 key={product.id} 
                 product={product} 
                 onQuickView={onQuickView} 
+                onBuyNow={onBuyNow}
               />
             ))}
           </div>

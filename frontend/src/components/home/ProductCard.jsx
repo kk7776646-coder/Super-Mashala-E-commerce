@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ShoppingBag, Plus, Minus, Check, Info, PackageCheck } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
-export const ProductCard = ({ product, onQuickView }) => {
+export const ProductCard = ({ product, onQuickView, onBuyNow }) => {
   const { addToCart } = useCart();
   
   const [quantity, setQuantity] = useState(1);
@@ -32,6 +32,14 @@ export const ProductCard = ({ product, onQuickView }) => {
     setTimeout(() => {
       setIsAdding(false);
     }, 700);
+  };
+
+  const handleBuyNow = () => {
+    if (isOutOfStock) return;
+    addToCart(product, quantity);
+    if (onBuyNow) {
+      onBuyNow(product, quantity);
+    }
   };
 
   const lineTotal = quantity * price;
@@ -155,27 +163,27 @@ export const ProductCard = ({ product, onQuickView }) => {
           )}
         </div>
 
-        {/* Quantity Controls & Add to Cart */}
+        {/* Quantity Controls & Add to Cart / Buy Now */}
         <div className="pt-1 space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             
             {/* Stepper [ - ] 1 [ + ] */}
             <div className="flex items-center border border-gray-300 rounded-xl bg-white overflow-hidden shadow-xs">
               <button
                 onClick={handleDecrement}
                 disabled={quantity <= 1 || isOutOfStock}
-                className="px-2.5 py-2 hover:bg-gray-100 text-gray-800 disabled:opacity-40 transition-colors"
+                className="px-2 py-2 hover:bg-gray-100 text-gray-800 disabled:opacity-40 transition-colors cursor-pointer"
                 aria-label="Decrease quantity"
               >
                 <Minus className="w-3.5 h-3.5" />
               </button>
-              <span className="w-8 text-center text-xs font-bold font-mono text-gray-900">
+              <span className="w-6 text-center text-xs font-bold font-mono text-gray-900">
                 {quantity}
               </span>
               <button
                 onClick={handleIncrement}
                 disabled={isOutOfStock || quantity >= stock}
-                className="px-2.5 py-2 hover:bg-gray-100 text-gray-800 disabled:opacity-40 transition-colors"
+                className="px-2 py-2 hover:bg-gray-100 text-gray-800 disabled:opacity-40 transition-colors cursor-pointer"
                 aria-label="Increase quantity"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -186,25 +194,39 @@ export const ProductCard = ({ product, onQuickView }) => {
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm ${
+              className={`py-2 px-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all shadow-xs cursor-pointer ${
                 isOutOfStock
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : isAdding
-                  ? 'bg-brand-success text-white scale-98'
-                  : 'bg-brand-primary text-white hover:bg-brand-primary-light active:scale-95'
+                  ? 'bg-brand-success text-white'
+                  : 'bg-white hover:bg-brand-cream text-brand-secondary border border-brand-border/80'
               }`}
+              title="Add to wholesale cart"
             >
               {isAdding ? (
                 <>
-                  <Check className="w-4 h-4" />
-                  <span>Added!</span>
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span>Added</span>
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-4 h-4 text-brand-gold" />
-                  <span>Add to Cart</span>
+                  <ShoppingBag className="w-3.5 h-3.5 text-brand-gold-dark" />
+                  <span>Cart</span>
                 </>
               )}
+            </button>
+
+            {/* BUY NOW Button */}
+            <button
+              onClick={handleBuyNow}
+              disabled={isOutOfStock}
+              className={`flex-1 py-2 px-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all shadow-sm cursor-pointer ${
+                isOutOfStock
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-brand-primary text-white hover:bg-brand-primary-light active:scale-95'
+              }`}
+            >
+              <span>Buy Now</span>
             </button>
 
           </div>

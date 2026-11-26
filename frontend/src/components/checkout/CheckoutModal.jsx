@@ -25,7 +25,7 @@ import { useOrders } from '../../context/OrderContext';
 import { OrderInvoiceModal } from '../orders/OrderInvoiceModal';
 import confetti from 'canvas-confetti';
 
-export const CheckoutModal = ({ isOpen, onClose, onOrderPlacedSuccess }) => {
+export const CheckoutModal = ({ isOpen, onClose, onOrderPlacedSuccess, onOpenAuth }) => {
   const { cart, subtotal, deliveryFee, grandTotal, clearCart } = useCart();
   const { user } = useAuth();
   const { placeOrder, verifyPayment, checkPaymentStatus } = useOrders();
@@ -105,17 +105,28 @@ export const CheckoutModal = ({ isOpen, onClose, onOrderPlacedSuccess }) => {
   };
 
   const handleProceed = async () => {
-    setIsPlacing(true);
     setVerifyError('');
 
-    const customerData = user || {
-      id: `retailer_${Date.now()}`,
-      shopName: guestDetails.shopName.trim() || 'Retail Kirana Store',
-      fullName: guestDetails.fullName.trim() || 'Store Proprietor',
-      mobileNumber: guestDetails.mobileNumber.trim() || '',
-      deliveryAddress: guestDetails.deliveryAddress.trim() || 'ulhasnager-05, Thane, Mumbai, pin code 421005',
-      areaLocality: 'Ulhasnagar-05',
-      city: 'Thane, Mumbai',
+    if (!user) {
+      setVerifyError('Authentication required. Please log in before placing an order.');
+      sessionStorage.setItem('pending_checkout', 'true');
+      if (onOpenAuth) {
+        onClose();
+        onOpenAuth();
+      }
+      return;
+    }
+
+    setIsPlacing(true);
+
+    const customerData = {
+      id: user.id,
+      shopName: user.shopName || 'Retail Kirana Store',
+      fullName: user.fullName || 'Store Proprietor',
+      mobileNumber: user.mobileNumber || '',
+      deliveryAddress: user.deliveryAddress || 'ulhasnager-05, Thane, Mumbai, pin code 421005',
+      areaLocality: user.areaLocality || 'Ulhasnagar-05',
+      city: user.city || 'Thane, Mumbai',
       role: 'customer'
     };
 
@@ -582,7 +593,7 @@ export const CheckoutModal = ({ isOpen, onClose, onOrderPlacedSuccess }) => {
                     </div>
                     <div>
                       <span className="text-brand-muted block text-[11px]">Proprietor / Contact:</span>
-                      <span className="font-semibold text-brand-text">{user.fullName} ({user.mobileNumber})</span>
+                      <span className="font-semibold text-brand-text">{user.fullName} ({user.mobileNumber || 'Mobile not provided'})</span>
                     </div>
                     <div className="sm:col-span-2">
                       <span className="text-brand-muted block text-[11px]">Delivery Location:</span>
@@ -592,63 +603,25 @@ export const CheckoutModal = ({ isOpen, onClose, onOrderPlacedSuccess }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-3 text-xs">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-semibold text-brand-text mb-1">
-                          Retail Shop Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={guestDetails.shopName}
-                          onChange={(e) => setGuestDetails(prev => ({ ...prev, shopName: e.target.value }))}
-                          placeholder="e.g. Ganesh Kirana Store"
-                          className="w-full px-3 py-2 bg-white border border-brand-border rounded-lg text-xs font-semibold text-brand-secondary focus:outline-none focus:border-brand-primary"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-semibold text-brand-text mb-1">
-                          Proprietor / Contact Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={guestDetails.fullName}
-                          onChange={(e) => setGuestDetails(prev => ({ ...prev, fullName: e.target.value }))}
-                          placeholder="e.g. Ramesh Patil"
-                          className="w-full px-3 py-2 bg-white border border-brand-border rounded-lg text-xs font-semibold text-brand-secondary focus:outline-none focus:border-brand-primary"
-                          required
-                        />
-                      </div>
+                  <div className="p-4 bg-amber-50/90 border border-amber-300 rounded-xl space-y-3">
+                    <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                      <ShieldAlert className="w-4 h-4 text-amber-700" />
+                      <span>Customer Account Required to Complete Order</span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-semibold text-brand-text mb-1">
-                          Mobile / WhatsApp Number *
-                        </label>
-                        <input
-                          type="tel"
-                          value={guestDetails.mobileNumber}
-                          onChange={(e) => setGuestDetails(prev => ({ ...prev, mobileNumber: e.target.value }))}
-                          placeholder="Enter 10-digit mobile number"
-                          className="w-full px-3 py-2 bg-white border border-brand-border rounded-lg text-xs font-semibold text-brand-secondary focus:outline-none focus:border-brand-primary"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-semibold text-brand-text mb-1">
-                          Shop Delivery Address & Locality *
-                        </label>
-                        <input
-                          type="text"
-                          value={guestDetails.deliveryAddress}
-                          onChange={(e) => setGuestDetails(prev => ({ ...prev, deliveryAddress: e.target.value }))}
-                          placeholder="e.g. ulhasnager-05, Thane, Mumbai, pin code 421005"
-                          className="w-full px-3 py-2 bg-white border border-brand-border rounded-lg text-xs font-semibold text-brand-secondary focus:outline-none focus:border-brand-primary"
-                          required
-                        />
-                      </div>
-                    </div>
+                    <p className="text-xs text-amber-800 leading-relaxed">
+                      Please log in or create an account to verify your delivery address, track orders, and complete your wholesale spice purchase.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sessionStorage.setItem('pending_checkout', 'true');
+                        onClose();
+                        if (onOpenAuth) onOpenAuth();
+                      }}
+                      className="w-full py-2.5 bg-brand-primary hover:bg-brand-primary-light text-brand-cream font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer"
+                    >
+                      Log In / Create Account
+                    </button>
                   </div>
                 )}
               </div>
@@ -799,11 +772,20 @@ export const CheckoutModal = ({ isOpen, onClose, onOrderPlacedSuccess }) => {
               {/* Submit Button */}
               <button
                 type="button"
-                onClick={handleProceed}
+                onClick={user ? handleProceed : () => {
+                  sessionStorage.setItem('pending_checkout', 'true');
+                  onClose();
+                  if (onOpenAuth) onOpenAuth();
+                }}
                 disabled={isPlacing || cart.length === 0}
                 className="w-full py-4 bg-brand-primary hover:bg-brand-primary-light text-brand-cream text-xs font-bold uppercase tracking-wider rounded-xl shadow-premium border border-brand-gold/40 flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
               >
-                {isPlacing ? (
+                {!user ? (
+                  <>
+                    <span>Log In to Place Order (₹{grandTotal.toFixed(2)})</span>
+                    <ArrowRight className="w-4 h-4 text-brand-gold" />
+                  </>
+                ) : isPlacing ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-brand-gold" />
                     <span>Processing Order...</span>

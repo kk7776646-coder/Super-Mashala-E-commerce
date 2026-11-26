@@ -7,7 +7,7 @@ class Settings:
     PROJECT_NAME: str = os.getenv("PROJECT_NAME", "SUPER MASHALA & DRY FRUITS")
     API_V1_STR: str = os.getenv("API_V1_STR", "/api")
     SECRET_KEY: str = os.getenv("SECRET_KEY", "super_mashala_production_secret_key_2026_secured")
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "").strip()
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7)))  # 7 days
     
     # Business Contacts
@@ -24,8 +24,8 @@ class Settings:
     LOCAL_DB_FILE: str = os.getenv("LOCAL_DB_FILE", "super_mashala.db").strip()
     
     # Supabase Credentials
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "").strip()
-    SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "").strip()
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://qdxfjsalohwmxzglfhzb.supabase.co").strip()
+    SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "sb_publishable_dtxL1pKd9KNH-BuDcIOkRQ_1PUIau7b").strip()
     SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
 
     @property
