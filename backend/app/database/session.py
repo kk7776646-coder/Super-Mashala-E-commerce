@@ -102,15 +102,36 @@ def close_db_connection(conn):
 
 def check_db_health() -> dict:
     """Verifies database connectivity without exposing secrets"""
+    res = {"connected": False, "provider": "unknown"}
     try:
         with get_db() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
             cursor.fetchone()
-            provider = "PostgreSQL" if db_wrapper.is_postgres else "SQLite"
-            return {"connected": True, "provider": provider}
+            res["connected"] = True
+            res["provider"] = "PostgreSQL" if db_wrapper.is_postgres else "SQLite (Persistent)"
     except Exception as e:
-        return {"connected": False, "error": str(e)}
+        res["error"] = str(e)
+
+    # Check Supabase status if configured
+    supabase_url = settings.effective_supabase_url
+    service_key = settings.effective_service_role_key
+    if supabase_url and service_key:
+        try:
+            import httpx
+            r = httpx.get(
+                f"{supabase_url}/auth/v1/health",
+                headers={"apikey": service_key, "Authorization": f"Bearer {service_key}", "User-Agent": "SuperMashalaBackend/1.0"},
+                timeout=3.0
+            )
+            if r.status_code == 200:
+                res["supabase_status"] = "connected"
+            else:
+                res["supabase_status"] = f"status_{r.status_code}"
+        except Exception:
+            res["supabase_status"] = "unreachable"
+
+    return res
 
 def init_db():
     """Create all required tables, migrations, and seeds"""
